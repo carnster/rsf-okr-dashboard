@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSF OKR Dashboard (FY26)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-item {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .header-item strong {
+            color: #2c3e50;
+        }
+
+        .team-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .team-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .team-header h2 {
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .team-header .role {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .objectives-grid {
+            display: grid;
+            gap: 20px;
+            padding: 25px;
+        }
+
+        .objective-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .objective-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .key-results {
+            display: grid;
+            gap: 15px;
+        }
+
+        .key-result {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 3px solid #e9ecef;
+        }
+
+        .key-result.on-track {
+            border-left-color: #27ae60;
+        }
+
+        .key-result.at-risk {
+            border-left-color: #f39c12;
+        }
+
+        .key-result.off-track {
+            border-left-color: #e74c3c;
+        }
+
+        .kr-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .kr-title {
+            font-weight: 600;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .kr-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .status-green {
+            background-color: #27ae60;
+        }
+
+        .status-yellow {
+            background-color: #f39c12;
+        }
+
+        .status-red {
+            background-color: #e74c3c;
+        }
+
+        .kr-details {
+            display: grid;
+            grid-template-columns: auto auto auto 1fr;
+            gap: 15px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .kr-metric {
+            background: #f1f3f4;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .kr-metric strong {
+            color: #2c3e50;
+        }
+
+        .kr-notes {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-green {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+
+        .progress-yellow {
+            background: linear-gradient(90deg, #f39c12, #f1c40f);
+        }
+
+        .progress-red {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+
+        .update-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .update-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .kr-details {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RSF OKR Dashboard (FY26)</h1>
+            <div class="header-info">
+                <div class="header-item">
+                    <strong>Quarter:</strong> Q1 FY26
+                </div>
+                <div class="header-item">
+                    <strong>Overall Health:</strong> <span id="overall-health">🟡</span>
+                </div>
+                <div class="header-item">
+                    <strong>Last Updated:</strong> <span id="last-updated">July 1, 2025</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-objectives">9</div>
+                <div class="stat-label">Total Objectives</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-key-results">19</div>
+                <div class="stat-label">Key Results</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="on-track-count">6</div>
+                <div class="stat-label">On Track</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="at-risk-count">5</div>
+                <div class="stat-label">At Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="off-track-count">8</div>
+                <div class="stat-label">Off Track</div>
+            </div>
+        </div>
+
+        <!-- Jonathan Johnson - CEO -->
+        <div class="team-section">
+            <div class="team-header">
+                <h2>Jonathan Johnson</h2>
+                <div class="role">Chief Executive Officer</div>
+            </div>
+            <div class="objectives-grid">
+                <div class="objective-card">
+                    <div class="objective-title">O1: Scale Impact</div>
+                    <div class="key-results">
+                        <div class="key-result on-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Launch 2 new schools</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-green">🟢</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 100% on-time charter submissions</div>
+                                <div class="kr-metric"><strong>Current:</strong> In Progress</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-green" style="width: 75%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                <strong>RSSC:</strong> Already implementing early leader recruitment. Conducting facilities due diligence now. RSLV pre-mortem scheduled with funders on enrollment assumptions.<br>
+                                <strong>RSOH:</strong> Evaluating grade-level entry points given market dynamics. Ensuring CMO oversight authority in governance structure. Building local partnerships 2+ years in advance.<br>
+                                <strong>Deadlines:</strong> RSCC charter due February 2026, RSOH charter due August 2026
+                            </div>
+                        </div>
+                        <div class="key-result on-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Secure $3m in public/private partnerships to scale The $50 Study</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-green">🟢</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >$3m</div>
+                                <div class="kr-metric"><strong>Current:</strong> On track</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-green" style="width: 80%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Referenced in DC July Onward Gameplan and Rooted School Foundation Funding Prospects tracker. Note: The fundraising workbook is not exhaustive.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="objective-title">O2: Build Excellence</div>
+                    <div class="key-results">
+                        <div class="key-result at-risk">
+                            <div class="kr-header">
+                                <div class="kr-title">Operational playbooks</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-yellow">🟡</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >8 operational playbooks</div>
+                                <div class="kr-metric"><strong>Current:</strong> In review</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-yellow" style="width: 40%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Currently conducting an inventory review
+                            </div>
+                        </div>
+                        <div class="key-result at-risk">
+                            <div class="kr-header">
+                                <div class="kr-title">Shared services savings</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-yellow">🟡</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 1-2 core services</div>
+                                <div class="kr-metric"><strong>Current:</strong> In planning</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-yellow" style="width: 30%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Currently deciding back-office support provided for schools at any maturity
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="objective-title">O3: Pioneer Models</div>
+                    <div class="key-results">
+                        <div class="key-result at-risk">
+                            <div class="kr-header">
+                                <div class="kr-title">Industry Advisory Councils</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-yellow">🟡</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 3</div>
+                                <div class="kr-metric"><strong>Current:</strong> In progress</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-yellow" style="width: 50%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Vancouver, Columbia, and Cleveland are the focus
+                            </div>
+                        </div>
+                        <div class="key-result on-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Funding appropriation wins</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-green">🟢</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >$3m</div>
+                                <div class="kr-metric"><strong>Current:</strong> On track</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-green" style="width: 85%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Referenced in DC July Onward Gameplan
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Talia Livneh - Senior Director of Programs -->
+        <div class="team-section">
+            <div class="team-header">
+                <h2>Talia Livneh</h2>
+                <div class="role">Senior Director of Programs</div>
+            </div>
+            <div class="objectives-grid">
+                <div class="objective-card">
+                    <div class="objective-title">O1: Drive School Growth</div>
+                    <div class="key-results">
+                        <div class="key-result at-risk">
+                            <div class="kr-header">
+                                <div class="kr-title">Governmental grant compliance</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-yellow">🟡</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 100% CSP compliance</div>
+                                <div class="kr-metric"><strong>Current:</strong> Pending approval</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-yellow" style="width: 70%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Currently awaiting US ED approval of budget narrative and ED 524
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Alumni support</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> TBD</div>
+                                <div class="kr-metric"><strong>Current:</strong> Planning needed</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 15%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Need to identify what resources (if any) are available to support this work. Additional work needed to identify SMART goals for alumni support 25-26. Important to note that the two schools with alumni are the two schools that do not currently engage in collaboration with RSF.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="objective-title">O2: Secure public funding ($50 Study)</div>
+                    <div class="key-results">
+                        <div class="key-result on-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Secure $3m in public/private partnerships to scale The $50 Study</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-green">🟢</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >$3m</div>
+                                <div class="kr-metric"><strong>Current:</strong> On track</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-green" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="key-result at-risk">
+                            <div class="kr-header">
+                                <div class="kr-title">Pipeline of municipal opportunities</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-yellow">🟡</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >15</div>
+                                <div class="kr-metric"><strong>Current:</strong> 3 identified</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-yellow" style="width: 20%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Currently, D.C., New Orleans, and Austin are in the pipeline
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="objective-title">O3: Build infrastructure</div>
+                    <div class="key-results">
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Pitch materials</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> Complete sets ($50 Study & Schools)</div>
+                                <div class="kr-metric"><strong>Current:</strong> Not started</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 5%"></div>
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Municipal relationships</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >20</div>
+                                <div class="kr-metric"><strong>Current:</strong> Building</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 10%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="objective-title">O4: Steward Culture</div>
+                    <div class="key-results">
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Network convenings</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 1</div>
+                                <div class="kr-metric"><strong>Current:</strong> Planning</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 25%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Team set target date; TL will then make plan from there
+                            </div>
+                        </div>
+                        <div class="key-result at-risk">
+                            <div class="kr-header">
+                                <div class="kr-title">Quarterly newsletter</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-yellow">🟡</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 4</div>
+                                <div class="kr-metric"><strong>Current:</strong> Outlined</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-yellow" style="width: 35%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Newsletter outline completed. Support needed to know what RSF team wants to prioritize in this newsletter.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Steven Carney - Senior Director of Growth & Innovation -->
+        <div class="team-section">
+            <div class="team-header">
+                <h2>Steven Carney</h2>
+                <div class="role">Senior Director of Growth & Innovation</div>
+            </div>
+            <div class="objectives-grid">
+                <div class="objective-card">
+                    <div class="objective-title">O1: Build Network-Wide Excellence</div>
+                    <div class="key-results">
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Rooted DNA</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >8 operational playbooks</div>
+                                <div class="kr-metric"><strong>Current:</strong> Planning phase</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 15%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Need to: Review existing RSF DNA documents, Create a working list of playbooks RSF should own, Flag what's already done vs. needs building, Draft a table with 8 playbooks, their current status (existing/in-progress/not started), and recommendation on owner. Hallcraft/SchoolOps Contributions?
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">AI strategy</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> Strategy developed</div>
+                                <div class="kr-metric"><strong>Current:</strong> Not started</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 5%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Need to: Develop a 30-45 day workstream to define scope and integration areas. Review any existing AI pilot ideas at RSF. Draft a one-pager - "AI at RSF - What's the Vision?" - Include 2-3 high potential use cases + a plan for a scope sprint.
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">PLCs</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> PLC framework established</div>
+                                <div class="kr-metric"><strong>Current:</strong> Planning needed</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 10%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Need to: Map what PLCs already exist or are in motion. Define the purpose: Are these to build cross-school cohesion? Improve model fidelity? Support innovation? Stakeholders? Draft a PLC concept doc: purpose, scope, pilot idea (e.g. Academic Leads PLC or ED-only PLC). LMS?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Continue with remaining objectives for Steven Carney -->
+                <div class="objective-card">
+                    <div class="objective-title">O2: Create Scalable Systems</div>
+                    <div class="key-results">
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Generate savings</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 1-2 core services</div>
+                                <div class="kr-metric"><strong>Current:</strong> Assessment needed</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 20%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Currently deciding back-office support provided for schools at any maturity. Need to: Connect to SchoolOps workstream: What systems are they setting up that could go network-wide? Identify 2-3 areas where scale = savings. Draft a 1 pager: "Shared Services Opportunity Scan"
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Build playbooks</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >8 operational playbooks</div>
+                                <div class="kr-metric"><strong>Current:</strong> Planning phase</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 15%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Repeat from above objectives
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Differentiated school supports</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 1-2 core supports</div>
+                                <div class="kr-metric"><strong>Current:</strong> Framework needed</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 10%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Use the "Support vs. Own" matrix from RSF's implementation framework. Define 2 high-impact supports RSF can offer that are scalable yet customizable (e.g., ED coaching sprint, launch kits)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="objective-title">O3: Career-Connected Learning Innovations</div>
+                    <div class="key-results">
+                        <div class="key-result on-track">
+                            <div class="kr-header">
+                                <div class="kr-title">New charter applications</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-green">🟢</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 2 charter applications submitted by deadline</div>
+                                <div class="kr-metric"><strong>Current:</strong> In progress</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-green" style="width: 70%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Need to: Add deadlines to calendar. Review CSP narratives, authorizer requirements, and status of applications-in-progress. Identify gaps: What roles, data, or narratives are still missing? Is there a Charter Application Status Tracker?
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Design microschool model</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 1-2 locations determined for first private microschool</div>
+                                <div class="kr-metric"><strong>Current:</strong> Planning needed</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 5%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Create our own "Microschool Command Center" doc with sections for curriculum, staffing, compliance, family onboarding, facility, etc.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="objective-title">O4: Drive Innovation</div>
+                    <div class="key-results">
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Support fundraising</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >$500K</div>
+                                <div class="kr-metric"><strong>Current:</strong> Role undefined</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 10%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Where can I contribute most? messaging? data? proposal drafting?
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Lead new school launches</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> 2</div>
+                                <div class="kr-metric"><strong>Current:</strong> Planning phase</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 25%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Review Columbia and Vegas scopes and timelines. Use CSP milestones, SchoolOps SOW, and other deliverables to build our own launch plan dashboard. What does "me leading" mean: coordination, quality control, timeline mgmt?
+                            </div>
+                        </div>
+                        <div class="key-result off-track">
+                            <div class="kr-header">
+                                <div class="kr-title">Foster innovative culture</div>
+                                <div class="kr-status">
+                                    <span class="status-indicator status-red">🔴</span>
+                                </div>
+                            </div>
+                            <div class="kr-details">
+                                <div class="kr-metric"><strong>Target:</strong> >4 new approaches tested</div>
+                                <div class="kr-metric"><strong>Current:</strong> Framework needed</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-red" style="width: 5%"></div>
+                            </div>
+                            <div class="kr-notes">
+                                Draft a tracker - "Innovation Portfolio: FY26" – list 4 innovations with test plan, owner, and launch month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Section -->
+        <div class="update-section">
+            <h2>Update Progress</h2>
+            <div class="update-form">
+                <div class="form-group">
+                    <label for="team-select">Team Member:</label>
+                    <select id="team-select">
+                        <option value="">Select Team Member</option>
+                        <option value="jonathan">Jonathan Johnson - CEO</option>
+                        <option value="talia">Talia Livneh - Senior Director of Programs</option>
+                        <option value="steven">Steven Carney - Senior Director of Growth & Innovation</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="objective-select">Objective:</label>
+                    <select id="objective-select">
+                        <option value="">Select Objective First</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="key-result-select">Key Result:</label>
+                    <select id="key-result-select">
+                        <option value="">Select Key Result</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status-select">Status:</label>
+                    <select id="status-select">
+                        <option value="green">🟢 On Track</option>
+                        <option value="yellow">🟡 At Risk</option>
+                        <option value="red">🔴 Off Track</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="progress-input">Progress (%):</label>
+                    <input type="number" id="progress-input" min="0" max="100" placeholder="Enter progress percentage">
+                </div>
+                <div class="form-group">
+                    <label for="notes-input">Update Notes:</label>
+                    <textarea id="notes-input" rows="4" placeholder="Enter progress notes and updates..."></textarea>
+                </div>
+                <button class="btn" onclick="updateProgress()">Update Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update last updated timestamp
+        document.getElementById('last-updated').textContent = new Date().toLocaleDateString();
+
+        // Team objectives data structure for the update form
+        const teamObjectives = {
+            jonathan: {
+                'Scale Impact': ['Launch 2 new schools', 'Secure $3m in public/private partnerships to scale The $50 Study'],
+                'Build Excellence': ['Operational playbooks', 'Shared services savings'],
+                'Pioneer Models': ['Industry Advisory Councils', 'Funding appropriation wins']
+            },
+            talia: {
+                'Drive School Growth': ['Governmental grant compliance', 'Alumni support'],
+                'Secure public funding ($50 Study)': ['Secure $3m in public/private partnerships to scale The $50 Study', 'Pipeline of municipal opportunities'],
+                'Build infrastructure': ['Pitch materials', 'Municipal relationships'],
+                'Steward Culture': ['Network convenings', 'Quarterly newsletter']
+            },
+            steven: {
+                'Build Network-Wide Excellence': ['Rooted DNA', 'AI strategy', 'PLCs'],
+                'Create Scalable Systems': ['Generate savings', 'Build playbooks', 'Differentiated school supports'],
+                'Career-Connected Learning Innovations': ['New charter applications', 'Design microschool model'],
+                'Drive Innovation': ['Support fundraising', 'Lead new school launches', 'Foster innovative culture']
+            }
+        };
+
+        // Update form functionality
+        document.getElementById('team-select').addEventListener('change', function() {
+            const team = this.value;
+            const objectiveSelect = document.getElementById('objective-select');
+            const keyResultSelect = document.getElementById('key-result-select');
+            
+            // Clear existing options
+            objectiveSelect.innerHTML = '<option value="">Select Objective</option>';
+            keyResultSelect.innerHTML = '<option value="">Select Key Result</option>';
+            
+            if (team && teamObjectives[team]) {
+                Object.keys(teamObjectives[team]).forEach(objective => {
+                    const option = document.createElement('option');
+                    option.value = objective;
+                    option.textContent = objective;
+                    objectiveSelect.appendChild(option);
+                });
+            }
+        });
+
+        document.getElementById('objective-select').addEventListener('change', function() {
+            const team = document.getElementById('team-select').value;
+            const objective = this.value;
+            const keyResultSelect = document.getElementById('key-result-select');
+            
+            // Clear existing options
+            keyResultSelect.innerHTML = '<option value="">Select Key Result</option>';
+            
+            if (team && objective && teamObjectives[team][objective]) {
+                teamObjectives[team][objective].forEach(keyResult => {
+                    const option = document.createElement('option');
+                    option.value = keyResult;
+                    option.textContent = keyResult;
+                    keyResultSelect.appendChild(option);
+                });
+            }
+        });
+
+        function updateProgress() {
+            const team = document.getElementById('team-select').value;
+            const objective = document.getElementById('objective-select').value;
+            const keyResult = document.getElementById('key-result-select').value;
+            const status = document.getElementById('status-select').value;
+            const progress = document.getElementById('progress-input').value;
+            const notes = document.getElementById('notes-input').value;
+
+            if (!team || !objective || !keyResult) {
+                alert('Please select team member, objective, and key result');
+                return;
+            }
+
+            // This would normally send data to a backend
+            // For now, show a confirmation
+            alert(`Progress updated for ${keyResult}!\nStatus: ${status}\nProgress: ${progress}%\nNotes: ${notes}`);
+            
+            // Clear form
+            document.getElementById('team-select').value = '';
+            document.getElementById('objective-select').innerHTML = '<option value="">Select Objective First</option>';
+            document.getElementById('key-result-select').innerHTML = '<option value="">Select Key Result</option>';
+            document.getElementById('status-select').value = 'green';
+            document.getElementById('progress-input').value = '';
+            document.getElementById('notes-input').value = '';
+            
+            // Update timestamp
+            document.getElementById('last-updated').textContent = new Date().toLocaleDateString();
+        }
+
+        // Calculate and update summary statistics
+        function updateSummaryStats() {
+            const statusIndicators = document.querySelectorAll('.status-indicator');
+            let onTrack = 0, atRisk = 0, offTrack = 0;
+            
+            statusIndicators.forEach(indicator => {
+                if (indicator.classList.contains('status-green')) onTrack++;
+                else if (indicator.classList.contains('status-yellow')) atRisk++;
+                else if (indicator.classList.contains('status-red')) offTrack++;
+            });
+            
+            document.getElementById('on-track-count').textContent = onTrack;
+            document.getElementById('at-risk-count').textContent = atRisk;
+            document.getElementById('off-track-count').textContent = offTrack;
+            document.getElementById('total-key-results').textContent = onTrack + atRisk + offTrack;
+            
+            // Update overall health based on ratios
+            const total = onTrack + atRisk + offTrack;
+            const greenRatio = onTrack / total;
+            const redRatio = offTrack / total;
+            
+            let overallHealth = '🟡';
+            if (greenRatio >= 0.7) overallHealth = '🟢';
+            else if (redRatio >= 0.5) overallHealth = '🔴';
+            
+            document.getElementById('overall-health').textContent = overallHealth;
+        }
+
+        // Initialize summary stats
+        updateSummaryStats();
+
+        // Add click handlers for status indicators to allow quick updates
+        document.querySelectorAll('.status-indicator').forEach(indicator => {
+            indicator.style.cursor = 'pointer';
+            indicator.addEventListener('click', function() {
+                const keyResult = this.closest('.key-result');
+                const currentClass = this.classList.contains('status-green') ? 'green' : 
+                                  this.classList.contains('status-yellow') ? 'yellow' : 'red';
+                
+                // Cycle through statuses
+                const nextStatus = currentClass === 'green' ? 'yellow' : 
+                                 currentClass === 'yellow' ? 'red' : 'green';
+                
+                // Update indicator
+                this.className = 'status-indicator status-' + nextStatus;
+                this.textContent = nextStatus === 'green' ? '🟢' : 
+                                 nextStatus === 'yellow' ? '🟡' : '🔴';
+                
+                // Update key result class
+                keyResult.className = keyResult.className.replace(/\b(on-track|at-risk|off-track)\b/, 
+                    nextStatus === 'green' ? 'on-track' : 
+                    nextStatus === 'yellow' ? 'at-risk' : 'off-track');
+                
+                // Update progress bar
+                const progressBar = keyResult.querySelector('.progress-fill');
+                if (progressBar) {
+                    progressBar.className = progressBar.className.replace(/\bprogress-(green|yellow|red)\b/, 
+                        'progress-' + nextStatus);
+                }
+                
+                // Update summary stats
+                updateSummaryStats();
+                
+                // Update timestamp
+                document.getElementById('last-updated').textContent = new Date().toLocaleDateString();
+            });
+        });
+    </script>
+</body>
+</html>
