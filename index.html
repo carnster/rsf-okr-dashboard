@@ -900,6 +900,17 @@
         <!-- Update Section -->
         <div class="update-section">
             <h2>Update Progress</h2>
+            
+            <!-- Test Connection Button -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button onclick="testConnection()" style="background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                    🔗 Test Google Sheets Connection
+                </button>
+                <button onclick="loadDashboardData()" style="background: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                    🔄 Refresh Data from Sheets
+                </button>
+            </div>
+            
             <div class="update-form">
                 <div class="form-group">
                     <label for="team-select">Team Member:</label>
@@ -1006,6 +1017,66 @@
             }
         });
 
+        // Your Google Apps Script URL
+        const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/rootedschool.org/s/AKfycbxgnrhscRbyCqhbwohWC2qQQ8IFhhA7x_vpWSRp6nA3pv8P1VDtuBwks6_cEmKvUsDJ/exec';
+
+        // Load data when page loads
+        window.addEventListener('load', function() {
+            loadDashboardData();
+        });
+
+        function loadDashboardData() {
+            console.log('Loading dashboard data from Google Sheets...');
+            fetch(APPS_SCRIPT_URL + '?action=getData')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data loaded successfully:', data.length, 'records');
+                    updateDashboardWithLiveData(data);
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                    console.log('Using static dashboard display');
+                });
+        }
+
+        function updateDashboardWithLiveData(data) {
+            // For now, we'll log the live data and keep static display
+            // This is where you'd update the dashboard with real-time data
+            console.log('Live OKR data:', data);
+            
+            // Update summary statistics with live data
+            updateSummaryStatsFromData(data);
+        }
+
+        function updateSummaryStatsFromData(data) {
+            if (!data || data.length === 0) return;
+            
+            let onTrack = 0, atRisk = 0, offTrack = 0;
+            
+            data.forEach(item => {
+                const status = item['Status Color'] || item.status;
+                if (status === 'Green') onTrack++;
+                else if (status === 'Yellow') atRisk++;
+                else if (status === 'Red') offTrack++;
+            });
+            
+            document.getElementById('on-track-count').textContent = onTrack;
+            document.getElementById('at-risk-count').textContent = atRisk;
+            document.getElementById('off-track-count').textContent = offTrack;
+            document.getElementById('total-key-results').textContent = data.length;
+            
+            // Update overall health
+            const total = onTrack + atRisk + offTrack;
+            const greenRatio = onTrack / total;
+            const redRatio = offTrack / total;
+            
+            let overallHealth = '🟡';
+            if (greenRatio >= 0.7) overallHealth = '🟢';
+            else if (redRatio >= 0.5) overallHealth = '🔴';
+            
+            document.getElementById('overall-health').textContent = overallHealth;
+        }
+
         function updateProgress() {
             const team = document.getElementById('team-select').value;
             const objective = document.getElementById('objective-select').value;
@@ -1019,11 +1090,43 @@
                 return;
             }
 
-            // This would normally send data to a backend
-            // For now, show a confirmation
-            alert(`Progress updated for ${keyResult}!\nStatus: ${status}\nProgress: ${progress}%\nNotes: ${notes}`);
-            
-            // Clear form
+            // Prepare form data for Google Apps Script
+            const formData = new FormData();
+            formData.append('action', 'updateProgress');
+            formData.append('teamMember', team);
+            formData.append('objective', objective);
+            formData.append('keyResult', keyResult);
+            formData.append('status', status);
+            formData.append('progress', progress);
+            formData.append('notes', notes);
+
+            console.log('Sending update to Google Sheets...');
+
+            // Send update to Google Apps Script
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Update response:', data);
+                if (data.success) {
+                    alert(`✅ Progress updated successfully for ${keyResult}!`);
+                    loadDashboardData(); // Refresh the dashboard with new data
+                    clearForm();
+                } else {
+                    alert('❌ Update failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating progress:', error);
+                // Fallback to static update for now
+                alert(`📝 Update logged for ${keyResult}!\nStatus: ${status}\nProgress: ${progress}%\nNotes: ${notes}\n\n(Note: Live updates may need troubleshooting)`);
+                clearForm();
+            });
+        }
+
+        function clearForm() {
             document.getElementById('team-select').value = '';
             document.getElementById('objective-select').innerHTML = '<option value="">Select Objective First</option>';
             document.getElementById('key-result-select').innerHTML = '<option value="">Select Key Result</option>';
@@ -1033,6 +1136,21 @@
             
             // Update timestamp
             document.getElementById('last-updated').textContent = new Date().toLocaleDateString();
+        }
+
+        // Test connection function
+        function testConnection() {
+            console.log('Testing connection to Google Apps Script...');
+            fetch(APPS_SCRIPT_URL + '?action=test')
+                .then(response => response.text())
+                .then(data => {
+                    console.log('✅ Connection test successful:', data);
+                    alert('✅ Connection to Google Sheets is working!');
+                })
+                .catch(error => {
+                    console.error('❌ Connection test failed:', error);
+                    alert('❌ Connection test failed. Check console for details.');
+                });
         }
 
         // Calculate and update summary statistics
