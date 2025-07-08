@@ -901,13 +901,16 @@
         <div class="update-section">
             <h2>Update Progress</h2>
             
-            <!-- Test Connection Button -->
+            <!-- Test Connection Buttons -->
             <div style="text-align: center; margin-bottom: 20px;">
                 <button onclick="testConnection()" style="background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
-                    🔗 Test Google Sheets Connection
+                    🔗 Test Connection
+                </button>
+                <button onclick="testDataLoading()" style="background: #e67e22; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                    📊 Test Data Loading
                 </button>
                 <button onclick="loadDashboardData()" style="background: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                    🔄 Refresh Data from Sheets
+                    🔄 Refresh Dashboard
                 </button>
             </div>
             
@@ -1138,18 +1141,59 @@
             document.getElementById('last-updated').textContent = new Date().toLocaleDateString();
         }
 
-        // Test connection function
+        // Test connection function with better error handling
         function testConnection() {
             console.log('Testing connection to Google Apps Script...');
-            fetch(APPS_SCRIPT_URL + '?action=test')
-                .then(response => response.text())
+            console.log('URL:', APPS_SCRIPT_URL + '?action=test');
+            
+            fetch(APPS_SCRIPT_URL + '?action=test', {
+                method: 'GET',
+                mode: 'cors'
+            })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    console.log('Response ok:', response.ok);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text();
+                })
                 .then(data => {
                     console.log('✅ Connection test successful:', data);
-                    alert('✅ Connection to Google Sheets is working!');
+                    alert('✅ Connection to Google Sheets is working!\n\nResponse: ' + data);
                 })
                 .catch(error => {
                     console.error('❌ Connection test failed:', error);
-                    alert('❌ Connection test failed. Check console for details.');
+                    console.error('Error details:', error.message);
+                    
+                    // More helpful error message
+                    let errorMsg = '❌ Connection test failed.\n\n';
+                    if (error.message.includes('CORS')) {
+                        errorMsg += 'CORS Error: This is often normal. Try testing data loading instead.';
+                    } else if (error.message.includes('403')) {
+                        errorMsg += 'Permission Error: Check Apps Script deployment permissions.';
+                    } else if (error.message.includes('404')) {
+                        errorMsg += 'Not Found: Check Apps Script URL is correct.';
+                    } else {
+                        errorMsg += 'Error: ' + error.message + '\n\nCheck browser console for details.';
+                    }
+                    
+                    alert(errorMsg);
+                });
+        }
+
+        // Alternative test - try loading actual data
+        function testDataLoading() {
+            console.log('Testing data loading...');
+            fetch(APPS_SCRIPT_URL + '?action=getData')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('✅ Data loading successful:', data);
+                    alert(`✅ Data loading works!\n\nLoaded ${data.length} records from your Google Sheet.`);
+                })
+                .catch(error => {
+                    console.error('❌ Data loading failed:', error);
+                    alert('❌ Data loading failed. Check console for details.');
                 });
         }
 
